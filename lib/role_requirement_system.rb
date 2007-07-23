@@ -56,6 +56,11 @@ module RoleRequirement
           next unless ( String===options[:if] ? eval(options[:if], binding) : options[:if].call(params) )
         end
         
+        if options.has_key?(:unless)
+          # execute the proc.  if the procedure returns true, we don't need to authenticate these roles
+          next if ( String===options[:unless] ? eval(options[:unless], binding) : options[:unless].call(params) )
+        end
+        
         # check to see if they have one of the required roles
         passed = false
         roles.each{|role|
