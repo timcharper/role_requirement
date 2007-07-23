@@ -1,3 +1,80 @@
-Role security system README
+== Summary ==
+There are many role-based security plug-ins out there.  Often times, they are very complicated and much more than you need.
 
-Nothing here yet!
+RoleRequirement focuses on a simple approach to role-based authentication.  you don't have to learn a new language in order to specify roles.  Instead, RoleRequirement leverages the power of Ruby to strike a marvelous balance between simplicity and flexibility.
+
+Basic Features:
+
+  * Implement role security system using an enum field or a habtm collection (user can have one or many roles)
+  * Full Test Helpers to make it easy to test your controllers
+  * Squeaky Clean implementation so you don't have to repeat yourself.
+
+
+== Usage ==
+
+Steps to using as easy as 1, 2, 3!
+
+=== 1.  Install acts_as_authenticated and role_requirement ===
+
+See install instructions below.  You must generate your User model from acts_as_authenticated and include AuthenticatedSystem in your ApplicationController, as usual.
+
+=== 2.  Add has_role? to your User model ===
+
+{{{
+class User < ActiveRecord::Base
+...
+  # has_role? simply needs to return true or false whether a user has a role or not.  
+  # It may be a good idea to have "admin" roles return true always
+  # You can use either a habtm relationship for roles, or a simple enum field.
+  # This example uses a habtm
+  def has_role?(role)
+    @roles ||= self.roles.collect(&:name)
+    return true if @roles.include?("admin")
+    (@roles.include?(role.to_s) )
+  end
+...
+}}}
+
+=== 3.  Require a roles in your controllers ===
+
+It's easy as pie!
+
+{{{
+
+class Admin::Users < ApplicationController
+  require_role "admin"
+end
+
+}}}
+
+Unlimited flexibility without the mess!
+
+{{{
+
+class Admin::Listings < ApplicationController
+  require_role "contractor"
+  require_role "admin", :only => :destroy # don't allow contractors to destroy
+
+  # leverage ruby to prevent contractors from updating listings they don't have access to.
+  require_role "admin", :only => :update, :unless => "current_user.authorized_for_listing?(params[:id]) "
+
+end
+
+}}}
+
+== Installation ==
+
+script/plugin install http://rolerequirement.googlecode.com/svn/tags/role_requirement/
+
+
+== Help ==
+
+Here's how to get help
+
+ * Browse the http://code.google.com/p/rolerequirement/wiki/Documentation
+ * post an issue to the http://code.google.com/p/rolerequirement/issues/list
+
+== Author ==
+{{{
+  Tim C. Harper - irb(main):001:0> ( 'tim_see_harperATgmail._see_om'.gsub('_see_', 'c').gsub('AT', '@') )
+}}}

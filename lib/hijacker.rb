@@ -1,3 +1,19 @@
+# Hijacker class
+#
+# This class is used by RoleRequirementTestHelper to temporarily hijack a controller action for testing
+#
+# It can be used for other tests as well.
+#
+# You can contract the author with questions
+#   Tim C. Harper - irb(main):001:0> ( 'tim_see_harperATgmail._see_om'.gsub('_see_', 'c').gsub('AT', '@') )
+#
+#
+# Example usage:
+#   hijacker = Hijacker.new(ListingsController)
+#   hijacker.hijack_instance_method("index", "render :text => 'hello world!'" )
+#   get :index        # will return "hello world"
+#   hijacker.restore  # put things back the way you found it
+
 class Hijacker
   def initialize(klass)
     @target_klass = klass
