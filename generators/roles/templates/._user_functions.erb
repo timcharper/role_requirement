@@ -1,8 +1,0 @@
-  has_and_belongs_to_many :<%=%>
-  # has_role? simply needs to return true or false whether a user has a role or not.  
-  # It may be a good idea to have "admin" roles return true always
-  def has_role?(role)
-    @roles ||= self.roles.collect(&:name)
-    return true if @roles.include?("admin")
-    (@roles.include?(role.to_s) )
-  end
