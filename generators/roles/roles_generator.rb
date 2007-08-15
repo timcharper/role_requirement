@@ -1,4 +1,9 @@
+require( File.join( File.dirname(__FILE__), "../role_generator_helpers" ))
+
 class RolesGenerator < Rails::Generator::NamedBase
+  
+  include RoleGeneratorHelpers
+  
   attr_accessor :roles_model_name, 
     :roles_table_name, 
     :users_table_name, 
@@ -58,30 +63,14 @@ class RolesGenerator < Rails::Generator::NamedBase
                   File.join('test/fixtures', "#{roles_table_name}.yml")
       end
       
+      content_for_insertion = render_template("_user_functions.erb")
       # modify the User model unless it's already got RoleRequirement code in there
-      
-      users_model_content = File.read(users_model_filename)
-      # already have the function?  Don't generate it twice
-      unless users_model_content.include?("def has_role?")
-        # find the line that has the model declaration
-        lines = users_model_content.split("\n")
-        found_line = nil
-        
-        regexp = Regexp.new("class +#{users_model_name}")
-        0.upto(lines.length-1) {|line_number| 
-          found_line = line_number if regexp.match(lines[line_number])
-        }
-        if found_line
-          puts found_line
-
-          # insert the rest of these lines after the found line
-          content_for_insertion = render_template("_user_functions.erb")
-          lines.insert(found_line+1, content_for_insertion)
-          users_model_content = lines * "\n"
-          
-          File.open(users_model_filename, "w") {|f| f.puts users_model_content }
-          puts "Added the following to the top of #{users_model_filename}:\n#{content_for_insertion}"
-        end
+      if insert_content_after(users_model_filename,
+                        Regexp.new("class +#{users_model_name}"),
+                        content_for_insertion,
+                        :unless => lambda { |content| content.include? "def has_role?"; }
+                        )
+        puts "Added the following to the top of #{users_model_filename}:\n#{content_for_insertion}"
       else
         puts "Not modifying #{users_model_filename} because it appears that the funtion has_role? already exists."
       end

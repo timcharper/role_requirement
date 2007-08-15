@@ -7,5 +7,4 @@ if RAILS_ENV=="test"
   Test::Unit::TestCase.send :include, RoleRequirementTestHelper
 end
 
-ActionController::Base.send :include, AuthenticatedSystem
 ActionController::Base.send :include, RoleRequirement

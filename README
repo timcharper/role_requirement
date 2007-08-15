@@ -1,4 +1,6 @@
 == Summary ==
+Version 1.1 - July 26, 2007
+
 There are many role-based security plug-ins out there.  Often times, they are very complicated and much more than you need.
 
 RoleRequirement focuses on a simple approach to role-based authentication.  you don't have to learn a new language in order to specify roles.  Instead, RoleRequirement leverages the power of Ruby to strike a marvelous balance between simplicity and flexibility.
