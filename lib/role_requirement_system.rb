@@ -4,6 +4,7 @@
 # See RoleSecurityClassMethods for some methods it provides.
 module RoleRequirement
   def self.included(klass)
+    klass.send :class_inheritable_array, :role_requirements
     klass.send :include, RoleSecurityInstanceMethods
     klass.send :extend, RoleSecurityClassMethods
     klass.send :helper_method, :url_options_authenticate? 
@@ -12,7 +13,7 @@ module RoleRequirement
   module RoleSecurityClassMethods
     
     def reset_role_requirements!
-      @role_requirements=nil
+      self.role_requirements=nil
     end
     
     # Add this to the top of your controller to require a role in order to access it.
@@ -49,14 +50,14 @@ module RoleRequirement
         end 
       end
       
-      @role_requirements||=[]
-      @role_requirements << {:roles => roles, :options => options }
+      self.role_requirements||=[]
+      self.role_requirements << {:roles => roles, :options => options }
     end
     
     # This is the core of RoleRequirement.  Here is where it discerns if a user can access a controller or not./
     def user_authorized_for?(user, params = {}, binding = self.binding)
-      return true unless Array===@role_requirements
-      @role_requirements.each{| role_requirement|
+      return true unless Array===self.role_requirements
+      self.role_requirements.each{| role_requirement|
         roles = role_requirement[:roles]
         options = role_requirement[:options]
         # do the options match the params?
