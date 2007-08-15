@@ -83,6 +83,9 @@ class RolesGenerator < Rails::Generator::NamedBase
           :migration_name => "Create#{roles_model_name.pluralize.gsub(/::/, '')}"
         }, :migration_file_name => "create_#{roles_table_name}"
       end
+      
+      add_dependencies_to_application_rb
+      
     end
   end
   

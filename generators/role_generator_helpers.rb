@@ -24,5 +24,33 @@ module RoleGeneratorHelpers
     end
   end
   
+  def add_dependencies_to_application_rb
+    app_filename = "#{RAILS_ROOT}/app/controllers/application.rb"
+    
+    auth_system_content = <<EOF
+  # AuthenticatedSystem must be included for RoleRequirement, and is provided by installing acts_as_authenticates and running 'script/generate authenticated account user'.
+  include AuthenticatedSystem
+EOF
+    
+    role_requirement_content = <<EOF
+  # You can move this into a different controller, if you wish.  This module gives you the require_role helpers, and others.
+  include RoleRequirement
+EOF
+
+    insert_content_after(
+      app_filename, 
+      /class +ApplicationController/, 
+      auth_system_content,
+      :unless => lambda {|content| /include +AuthenticatedSystem/.match(content) }
+    ) && puts("Added ApplicationController include to #{app_filename}")
+    
+    insert_content_after(
+      app_filename, 
+      /include +AuthenticatedSystem/, 
+      role_requirement_content,
+      :unless => lambda {|content| /include +RoleRequirement/.match(content) }
+    ) && puts("Added RoleRequirement include to #{app_filename}")
+    
+  end
   
 end
