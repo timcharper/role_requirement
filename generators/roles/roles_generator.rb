@@ -76,7 +76,7 @@ class RolesGenerator < Rails::Generator::NamedBase
       end
       
       # add the Role model
-      
+      m.template 'role_model.rb', roles_model_filename
       # generate migration
       unless options[:skip_migration]
         m.migration_template 'roles_migration.rb', 'db/migrate', :assigns => {
@@ -96,6 +96,7 @@ class RolesGenerator < Rails::Generator::NamedBase
   
   def habtm_name;       [roles_table_name, users_table_name].sort * "_"; end
   def roles_foreign_key; roles_table_name.singularize.foreign_key; end
+  def roles_model_filename;  "#{RAILS_ROOT}/app/models/#{roles_model_name.underscore}.rb"; end;
   def users_foreign_key; users_table_name.singularize.foreign_key; end
   def users_model_filename;  "#{RAILS_ROOT}/app/models/#{users_model_name.underscore}.rb"; end;
   def users_fixture_filename;   "#{RAILS_ROOT}/test/fixtures/users.yml"; end;
