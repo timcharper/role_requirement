@@ -20,16 +20,11 @@ class RoleGenerator < Rails::Generator::NamedBase
   def manifest
     record do |m|
       add_method_to_user_model(m)
-      add_migration(m) unless options[:skip_migration]
       add_role_requirement_system(m)
       add_dependencies_to_application_rb
+      add_dependencies_to_test_helper_rb
+      add_migration(m) unless options[:skip_migration]
     end
-  end
-  
-  def add_role_requirement_system(m)
-    m.template '../../shared_templates_role_requirement_system',
-          File.join('test/fixtures', "#{habtm_name}.yml")
-
   end
   
   def add_method_to_user_model(m)

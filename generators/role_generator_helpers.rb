@@ -24,6 +24,30 @@ module RoleGeneratorHelpers
     end
   end
   
+  def add_role_requirement_system(m)
+    m.template '../../shared_templates/role_requirement_system.rb.erb',
+          File.join('lib', "role_requirement_system.rb")
+    m.template '../../shared_templates/role_requirement_test_helper.rb.erb',
+          File.join('lib', "role_requirement_test_helper.rb")
+    m.template '../../shared_templates/hijacker.rb',
+          File.join('lib', "hijacker.rb")
+  end
+  
+  def add_dependencies_to_test_helper_rb
+    app_filename = "#{RAILS_ROOT}/test/test_helper.rb"
+    
+    test_helper_content = <<EOF
+  # RoleRequirementTestHelper must be included to test RoleRequirement
+  include RoleRequirementTestHelper
+EOF
+    insert_content_after(
+      app_filename, 
+      /class +Test::Unit::TestCase/, 
+      test_helper_content,
+      :unless => lambda {|content| /include +RoleRequirementTestHelper/.match(content) }
+    ) && puts("Added RoleRequirementTestHelper include to #{app_filename}")
+  end
+
   def add_dependencies_to_application_rb
     app_filename = "#{RAILS_ROOT}/app/controllers/application.rb"
     
@@ -34,7 +58,7 @@ EOF
     
     role_requirement_content = <<EOF
   # You can move this into a different controller, if you wish.  This module gives you the require_role helpers, and others.
-  include RoleRequirement
+  include RoleRequirementSystem
 EOF
 
     insert_content_after(
@@ -48,7 +72,7 @@ EOF
       app_filename, 
       /include +AuthenticatedSystem/, 
       role_requirement_content,
-      :unless => lambda {|content| /include +RoleRequirement/.match(content) }
+      :unless => lambda {|content| /include +RoleRequirementSystem/.match(content) }
     ) && puts("Added RoleRequirement include to #{app_filename}")
     
   end
