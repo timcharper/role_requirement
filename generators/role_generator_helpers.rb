@@ -53,4 +53,8 @@ EOF
     
   end
   
+  def users_model_filename;  "app/models/#{users_model_name.underscore}.rb"; end;
+    
+  def users_name;  "#{users_model_name.downcase}"; end;
+  
 end

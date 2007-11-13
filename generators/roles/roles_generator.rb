@@ -98,7 +98,6 @@ class RolesGenerator < Rails::Generator::NamedBase
   def roles_foreign_key; roles_table_name.singularize.foreign_key; end
   def roles_model_filename;  "app/models/#{roles_model_name.underscore}.rb"; end;
   def users_foreign_key; users_table_name.singularize.foreign_key; end
-  def users_model_filename;  "app/models/#{users_model_name.underscore}.rb"; end;
   def users_fixture_filename;   "test/fixtures/users.yml"; end;
   protected
     def banner

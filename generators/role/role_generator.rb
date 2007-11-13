@@ -19,40 +19,45 @@ class RoleGenerator < Rails::Generator::NamedBase
   
   def manifest
     record do |m|
-      # modify trohe User model unless it's already got RoleRequirement code in there
-      content_for_insertion = render_template("_user_functions.erb")
-      
-      if insert_content_after(users_model_filename,
-                              Regexp.new("class +#{users_model_name}"),
-                              content_for_insertion,
-                              :unless => lambda { |content| content.include? "def has_role?"; }
-                              )
-        
-        puts "Added the following to the top of #{users_model_filename}:\n#{content_for_insertion}"
-      else
-        puts "Not modifying #{users_model_filename} because it appears that the funtion has_role? already exists."
-      end
-      
-      # add the Role model
-      
-      # generate migration
-      unless options[:skip_migration]
-        m.migration_template 'add_role_to_users_migration.rb', 'db/migrate', :assigns => {
-          :migration_name => "AddRoleTo#{users_model_name.pluralize.gsub(/::/, '')}"
-        }, :migration_file_name => "add_role_to_#{users_table_name}"
-      end
-      
+      add_method_to_user_model(m)
+      add_migration(m) unless options[:skip_migration]
+      add_role_requirement_system(m)
       add_dependencies_to_application_rb
-      
     end
+  end
+  
+  def add_role_requirement_system(m)
+    m.template '../../shared_templates_role_requirement_system',
+          File.join('test/fixtures', "#{habtm_name}.yml")
+
+  end
+  
+  def add_method_to_user_model(m)
+    # modify the User model unless it's already got RoleRequirement code in there
+    content_for_insertion = render_template("_user_functions.erb")
+    
+    if insert_content_after(users_model_filename,
+                            Regexp.new("class +#{users_model_name}"),
+                            content_for_insertion,
+                            :unless => lambda { |content| content.include? "def has_role?"; }
+                            )
+      
+      puts "Added the following to the top of #{users_model_filename}:\n#{content_for_insertion}"
+    else
+      puts "Not modifying #{users_model_filename} because it appears that the funtion has_role? already exists."
+    end
+  end
+  
+  def add_migration(m)
+    m.migration_template 'add_role_to_users_migration.rb', 'db/migrate', :assigns => {
+      :migration_name => "AddRoleTo#{users_model_name.pluralize.gsub(/::/, '')}"
+    }, :migration_file_name => "add_role_to_#{users_table_name}"
   end
   
   def render_template(name)
     template = File.read( File.join( File.dirname(__FILE__), "templates", name))
     ERB.new(template, nil, "-").result(binding)
   end
-  
-  def users_model_filename;  "app/models/#{users_model_name.underscore}.rb"; end;
 
 protected
   

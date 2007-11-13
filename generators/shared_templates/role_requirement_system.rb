@@ -21,7 +21,7 @@ module RoleRequirement
     # 
     #    require_role "contractor"
     #    require_role "admin", :only => :destroy # don't allow contractors to destroy
-    #    require_role "admin", :only => :update, :unless => "current_user.authorized_for_listing?(params[:id]) "
+    #    require_role "admin", :only => :update, :unless => "current_<%= users_name %>.authorized_for_listing?(params[:id]) "
     #
     # Valid options
     #
@@ -54,8 +54,8 @@ module RoleRequirement
       self.role_requirements << {:roles => roles, :options => options }
     end
     
-    # This is the core of RoleRequirement.  Here is where it discerns if a user can access a controller or not./
-    def user_authorized_for?(user, params = {}, binding = self.binding)
+    # This is the core of RoleRequirement.  Here is where it discerns if a <%= users_name %> can access a controller or not./
+    def <%= users_name %>_authorized_for?(<%= users_name %>, params = {}, binding = self.binding)
       return true unless Array===self.role_requirements
       self.role_requirements.each{| role_requirement|
         roles = role_requirement[:roles]
@@ -84,8 +84,8 @@ module RoleRequirement
         # check to see if they have one of the required roles
         passed = false
         roles.each { |role|
-          passed = true if user.has_role?(role)
-        } unless (user==:false || user==false)
+          passed = true if <%= users_name %>.has_role?(role)
+        } unless (<%= users_name %>==:false || <%= users_name %>==false)
         
         return false unless passed
       }
@@ -96,13 +96,13 @@ module RoleRequirement
   
   module RoleSecurityInstanceMethods
     def check_roles       
-      return access_denied unless self.class.user_authorized_for?(current_user, params, binding)
+      return access_denied unless self.class.<%= users_name %>_authorized_for?(current_<%= users_name %>, params, binding)
       
       true
     end
     
   protected
-    # receives a :controller, :action, and :params.  Finds the given controller and runs user_authorized_for? on it.
+    # receives a :controller, :action, and :params.  Finds the given controller and runs <%= users_name %>_authorized_for? on it.
     # This can be called in your views, and is for advanced users only.  If you are using :if / :unless eval expressions, 
     #   then this may or may not work (eval strings use the current binding to execute, not the binding of the target 
     #   controller)
@@ -114,7 +114,7 @@ module RoleRequirement
       else
         klass = self.class
       end
-      klass.user_authorized_for?(current_user, params, binding)
+      klass.<%= users_name %>_authorized_for?(current_<%= users_name %>, params, binding)
     end
   end
 end

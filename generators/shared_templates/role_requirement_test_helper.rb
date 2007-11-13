@@ -7,48 +7,48 @@
 #
 module RoleRequirementTestHelper
 
-  # Makes sure a user can access the given action
+  # Makes sure a <%= users_name %> can access the given action
   #
   # Example:
   #
-  #   assert_user_can_access(:quentin, "index")
+  #   assert_<%= users_name %>_can_access(:quentin, "index")
   # 
-  def assert_user_can_access(user, actions, params = {})
-    assert_user_access_check(true, user, actions, params)
+  def assert_<%= users_name %>_can_access(<%= users_name %>, actions, params = {})
+    assert_<%= users_name %>_access_check(true, <%= users_name %>, actions, params)
   end
   
-  # Makes sure a user cant access the given action
+  # Makes sure a <%= users_name %> cant access the given action
   #
   # Example:
   #
-  #   assert_user_cant_access(:quentin, "destroy", :listing_id => 1)
+  #   assert_<%= users_name %>_cant_access(:quentin, "destroy", :listing_id => 1)
   # 
-  def assert_user_cant_access(user, actions, params = {})
-    assert_user_access_check(false, user, actions, params)
+  def assert_<%= users_name %>_cant_access(<%= users_name %>, actions, params = {})
+    assert_<%= users_name %>_access_check(false, <%= users_name %>, actions, params)
   end
   
-  # Check a list of users against a set of actions with parameters.
+  # Check a list of <%= users_name.pluralize %> against a set of actions with parameters.
   # 
   # Parameters:
-  #   users_access_list - a hash where the key is the label for a fixture, and the value is a boolean.
+  #   <%= users_name.pluralize%>_access_list - a hash where the key is the label for a fixture, and the value is a boolean.
   #   actions - a list of actions to test against
   #   params - a hash containing the parameters to pass to each test call to the controller.
   # 
   # Example:
-  #   assert_user_access(
+  #   assert_<%= users_name %>_access(
   #     {:admin => true, :quentin => false }, 
   #     [:show, :edit], 
   #     {:listing_id => 1})
-  def assert_users_access(users_access_list, actions, params = {})
-    users_access_list.each_pair {|user, access| 
-      assert_user_access_check(access, user, actions, params)
+  def assert_<%= users_name.pluralize %>_access(<%= users_name.pluralize %>_access_list, actions, params = {})
+    <%= users_name.pluralize %>_access_list.each_pair {|<%= users_name %>, access| 
+      assert_<%= users_name %>_access_check(access, <%= users_name %>, actions, params)
     }
   end
   
-  alias :assert_user_cannot_access :assert_user_cant_access
+  alias :assert_<%= users_name %>_cannot_access :assert_<%= users_name %>_cant_access
 
 private
-  def assert_user_access_check(should_access, user, actions, params = {})
+  def assert_<%= users_name %>_access_check(should_access, <%= users_name %>, actions, params = {})
     params = HashWithIndifferentAccess.new(params)
     
     (Array===actions ? actions : [actions]).each { |action|
@@ -56,11 +56,11 @@ private
       @controller = @controller.class.new
       @request = @request.class.new
       @response = @response.class.new
-      login_as user
+      login_as <%= users_name %>
       if should_access
-        assert request_passes_role_security_system?(action, params), "request to #{@controller.class}##{action} with user #{user} and params #{params.inspect} should have passed "
+        assert request_passes_role_security_system?(action, params), "request to #{@controller.class}##{action} with <%= users_name %> #{<%= users_name %>} and params #{params.inspect} should have passed "
       else
-        assert ! request_passes_role_security_system?(action, params), "request to #{@controller.class}##{action} with user #{user} and params #{params.inspect} should have been denied"
+        assert ! request_passes_role_security_system?(action, params), "request to #{@controller.class}##{action} with <%= users_name %> #{<%= users_name %>} and params #{params.inspect} should have been denied"
       end
     }
   end
