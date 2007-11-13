@@ -51,7 +51,7 @@ private
   def assert_user_access_check(should_access, user, actions, params = {})
     params = HashWithIndifferentAccess.new(params)
     
-    actions.each { |action|
+    (Array===actions ? actions : [actions]).each { |action|
       # reset the controller, request, and response
       @controller = @controller.class.new
       @request = @request.class.new
