@@ -96,10 +96,10 @@ class RolesGenerator < Rails::Generator::NamedBase
   
   def habtm_name;       [roles_table_name, users_table_name].sort * "_"; end
   def roles_foreign_key; roles_table_name.singularize.foreign_key; end
-  def roles_model_filename;  "#{RAILS_ROOT}/app/models/#{roles_model_name.underscore}.rb"; end;
+  def roles_model_filename;  "app/models/#{roles_model_name.underscore}.rb"; end;
   def users_foreign_key; users_table_name.singularize.foreign_key; end
-  def users_model_filename;  "#{RAILS_ROOT}/app/models/#{users_model_name.underscore}.rb"; end;
-  def users_fixture_filename;   "#{RAILS_ROOT}/test/fixtures/users.yml"; end;
+  def users_model_filename;  "app/models/#{users_model_name.underscore}.rb"; end;
+  def users_fixture_filename;   "test/fixtures/users.yml"; end;
   protected
     def banner
       "Usage: #{$0} roles RoleModelName [TargetUserModelName]"

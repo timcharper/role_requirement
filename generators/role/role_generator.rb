@@ -52,7 +52,7 @@ class RoleGenerator < Rails::Generator::NamedBase
     ERB.new(template, nil, "-").result(binding)
   end
   
-  def users_model_filename;  "#{RAILS_ROOT}/app/models/#{users_model_name.underscore}.rb"; end;
+  def users_model_filename;  "app/models/#{users_model_name.underscore}.rb"; end;
 
 protected
   
