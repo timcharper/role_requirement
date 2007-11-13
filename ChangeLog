@@ -1,3 +1,6 @@
+Version 1.3.1 - November 14, 2007
+  * Extends "access_denied" to render a 401 error if they are logged in but not authorized
+  
 Version 1.3 - November 13, 2007
   * Rails 2.0 ready - Both generators tested against Rails 1.99.0
   * Generators now generate RoleRequirementSystem and RoleRequirementTestHelper.  Automatically places RoleRequirementTestHelper include in test_helper.rb
