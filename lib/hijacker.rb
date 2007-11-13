@@ -17,28 +17,57 @@
 class Hijacker
   def initialize(klass)
     @target_klass = klass
-    @store = []
+    @method_stores = {}
+  end
+  
+  def hijack_class_method(method_name, eval_string = nil, arg_names = [], &block)
+    hijack_method(class_self_instance, method_name, eval_string, arg_names, &block )
   end
   
   def hijack_instance_method(method_name, eval_string = nil, arg_names = [], &block)
+    hijack_method(@target_klass, method_name, eval_string, arg_names, &block )
+  end
+  
+  # restore all 
+  def restore
+    @method_stores.each_pair{|klass, method_stores|
+      method_stores.reverse_each{ |method_name, method| 
+        klass.send :undef_method, method_name
+        klass.send :define_method, method_name, method if method
+      }
+    }
+    @method_stores.clear
+    true
+  rescue
+    false
+  end
+  
+protected  
+
+  def class_self_instance
+    @target_klass.send :eval, "class << self; self; end;"
+  end
+  
+  def hijack_method(klass, method_name, eval_string = nil, arg_names = [], &block)
     method_name = method_name.to_s
     # You have got love ruby!  What other language allows you to pillage and plunder a class like this? 
-    @store << [
+    
+    (@method_stores[klass]||=[]) << [
       method_name, 
-      @target_klass.instance_methods.include?(method_name) && @target_klass.instance_method(method_name)
+      klass.instance_methods.include?(method_name) && klass.instance_method(method_name)
     ]
     
-    @target_klass.send :undef_method, method_name
+    klass.send :undef_method, method_name
     if Symbol === eval_string
-      @target_klass.send :define_method, method_name, @target_klass.instance_methods(eval_string)
+      klass.send :define_method, method_name, klass.instance_methods(eval_string)
     elsif String === eval_string
-      @target_klass.class_eval <<-EOF 
+      klass.class_eval <<-EOF 
         def #{method_name}(#{arg_names * ','})
           #{eval_string}
         end
       EOF
     elsif block_given?
-      @target_klass.send :define_method, method_name, block
+      klass.send :define_method, method_name, block
     end
     
     true
@@ -46,15 +75,4 @@ class Hijacker
     false
   end
   
-  # restore all 
-  def restore
-    @store.reverse_each{ |method_name, method| 
-      @target_klass.send :undef_method, method_name
-      @target_klass.send :define_method, method_name, method if method
-    }
-    @store.clear
-    true
-  rescue
-    false
-  end
 end
