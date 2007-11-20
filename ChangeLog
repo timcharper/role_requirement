@@ -1,3 +1,7 @@
+Version 1.3.2 - November 20, 2007
+  * Brought back test cases (now auto-evals the erb template to test to make sure the template for the generator is valid)
+  * Automatically added :for and :for_all_except aliases, for more natural expressions
+  
 Version 1.3.1 - November 14, 2007
   * Extends "access_denied" to render a 401 error if they are logged in but not authorized
   
