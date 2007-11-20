@@ -1,11 +1,13 @@
 require File.join(File.dirname(__FILE__), '../test_helper.rb')
 
 class MyController < ControllerStub 
-  include RoleRequirement
+  include AuthenticatedSystem
+  include RoleRequirementSystem
 end
 
 class OtherController < ControllerStub
-  include RoleRequirement
+  include AuthenticatedSystem
+  include RoleRequirementSystem
 end
 
 class TestRoleController < Test::Unit::TestCase
@@ -79,17 +81,15 @@ class TestRoleController < Test::Unit::TestCase
   def test__controllers_dont_share_requirements
     @controller2 = OtherController.new
     @controller2.class.require_role "user"
-    @controller2.current_user = User.new(:roles => "user")
+    @controller2.send :current_user=, User.new(:roles => "user")
     
     @controller.class.require_role "admin"
     @controller.current_user = User.new(:roles => "admin")
-
     assert(@controller.check_roles, "should pass")
     assert(@controller2.check_roles, "should pass")
 
     @controller2.current_user = User.new(:roles => "")
     @controller.current_user = User.new(:roles => "")
-
     assert(!@controller.check_roles, "shouldn't pass")
     assert(!@controller2.check_roles, "shouldn't pass")
   end

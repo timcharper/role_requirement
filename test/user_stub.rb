@@ -1,6 +1,10 @@
 class User
   attr_accessor :roles
   
+  def id
+    1
+  end
+  
   def initialize(params = {})
     self.roles = params[:roles]
   end
@@ -22,4 +26,5 @@ class User
       @roles = nil
     end
   end
+  
 end

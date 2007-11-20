@@ -8,12 +8,15 @@ module RoleRequirementSystem
     klass.send :include, RoleSecurityInstanceMethods
     klass.send :extend, RoleSecurityClassMethods
     klass.send :helper_method, :url_options_authenticate? 
+    
+    klass.send :role_requirements=, []
+    
   end
   
   module RoleSecurityClassMethods
     
     def reset_role_requirements!
-      self.role_requirements=nil
+      self.role_requirements.clear
     end
     
     # Add this to the top of your controller to require a role in order to access it.
@@ -31,7 +34,10 @@ module RoleRequirementSystem
     #  * :unless - The inverse of :if
     #    
     def require_role(roles, options = {})
-      options.assert_valid_keys(:if, :only, :except, :unless)
+      options.assert_valid_keys(:if, :unless,
+        :for, :only, 
+        :for_all_except, :except
+      )
       
       # only declare that before filter once
       unless (@before_filter_declared||=false)
@@ -42,11 +48,14 @@ module RoleRequirementSystem
       # convert to an array if it isn't already
       roles = [roles] unless Array===roles
       
+      options[:only] ||= options[:for] if options[:for]
+      options[:except] ||= options[:for_all_but] if options[:for_all_but]
+      
       # convert any actions into symbols
       for key in [:only, :except]
         if options.has_key?(key)
           options[key] = [options[key]] unless Array === options[key]
-          options[key] = options[key].collect{|v| v.to_sym}
+          options[key] = options[key].compact.collect{|v| v.to_sym}
         end 
       end
       
