@@ -1,61 +1,73 @@
 ::Role Requirement Help::
+=========================
 role_requirement first assumes that the controller is accessible to everyone.
 Each require_role line serves to add one or more required roles before executing actions within the controller.
 
-require_role "foo"		"Require that the current_user must have role foo before executing any action within this controller."
+require_role "admin"		"Require that the current_user must have role admin before executing any action within this controller."
+
+
 
 ::"Limiting" Methods::
-role_requirement accepts several methods as an options hash of key/value pairs. These methods work like clauses that limit the require_role line.
-:only =>                "Evaluate this role requirement before executing ONLY the following actions in this controller..."
-:for =>					Same as :only
+=========================
 
-:for_all_except =>		"Evaluate this role requirement before executing ALL actions in this controller EXCEPT the following..."
-:except =>				Same as :for_all_except
+role_requirement accepts several methods as an options hash of key/value pairs. These methods work like clauses that limit the require_role line.
+	:for =>               "Evaluate this role requirement before executing ONLY the following actions in this controller..."
+	:for_all_except =>		"Evaluate this role requirement before executing ALL actions in this controller EXCEPT the following..."
 
 These methods can be thought of as telling role_requirement when to evaluate current_user's roles.
-require_role "foo", :for_all_except => :action1
-# Means, "Anytime an action is called, require the role foo in order to execute, EXCEPT when action1 is called." So, action1 passes through this require_role line allowing anyone to access it, ALL other actions are evaluated against the specified role(s).
 
-require_role "foo", :only => :action1
-# Means, "Evaluate current_user's role(s) ONLY when action1 is called... and require foo in order to execute action1." So, every action except action1 passes through this require_role line, ONLY action1 is evaluated.
+# Anytime an action is called, require the role admin in order to execute, EXCEPT when index is called." So, index passes through this require_role line allowing anyone to access it, ALL other actions are evaluated against the specified role(s).
+require_role "admin", :for_all_except => :index
+
+# Means, "Evaluate current_user's role(s) ONLY when index is called... and require admin in order to execute index." So, every action except index passes through this require_role line, ONLY index is evaluated.
+require_role "admin", :for => :index
+
+
+
 
 ::How require_role Lines Work In Combination::
+==============================================
+
 Each line serves as an additional requirement to any other lines in the controller... like AND... not OR.
 
-require_role "foo"
-require_role "bar"
-# This means that role_requirement will look for BOTH roles for EVERY action in the controller, i. e. current_user must have both foo and bar roles to do anything in this controller.
+require_role "admin"
+require_role "executive"
+# This means that role_requirement will look for BOTH roles for EVERY action in the controller, i. e. current_user must have both admin and executive roles to do anything in this controller.
 
 
-require_role "foo"
-require_role "bar", :for_all_except => :action1
-# This means that foo can access only action1 and bar can access everything in the controller except action1.
-# The controller requires foo for every action AND looks for bar in order to execute every action except action1. (Probably not a very useful configuration!)
+require_role "admin"
+require_role "executive", :for_all_except => [:index]
+# This means that admin can access only index and executive can access everything in the controller except index.
+# The controller requires admin for every action AND looks for executive in order to execute every action except index. (Probably not a very useful configuration!)
 
-require_role "foo"
-require_role "bar", :only => :action1
-# This means that foo can access the entire controller and bar is required only for action1.
-# The controller always requires foo and requires bar only when action1 is called. Useful for allowing only bar to call certain, more restricted, actions, for example. 
+require_role "admin"
+require_role "executive", :for => [:create, :update, :edit, :destroy]
+# This means that admin can access the entire controller and executive is required only for index.
+# The controller always requires admin and requires executive only when index is called. Useful for allowing only executive to call certain, more restricted, actions, for example. 
+
+
 
 ::Passing Arrays::
+==================
 role_requirement accepts arrays of roles and/or actions. When more than one role name or action name is passed, they work like "OR" in the requirement phrase.
 
-require_role ["foo", "bar"]
-# current_user can do anything in this controller if they have either role, foo OR bar.
+# current_user can do anything in this controller if they have either role, admin OR executive.
+require_role ["admin", "executive"]
 
-require_role "foo", :for_all_except => [:list, :show]
-# The role foo is required to perform all actions in this controller EXCEPT list or show. So, anyone can list and show. Foo can do anything.
+# The role admin is required to perform all actions in this controller EXCEPT list or show. So, anyone can list and show. admin can do anything.
+require_role "admin", :for_all_except => [:list, :show]
 
-require_role "foo", :only => [:delete, :edit]
-# The role foo is required to perform ONLY delete OR edit. Other actions are not evaluated. So, only foo can delete or edit. Others can do anything other than delete or edit.
+# The role admin is required to perform ONLY delete OR edit. Other actions are not evaluated. So, only admin can delete or edit. Others can do anything other than delete or edit.
+require_role "admin", :for => [:delete, :edit]
 
 ::Admin::
 role_requirement's generator will automatically add a method to your user model, User#has_role?
 This method, by default, always returns true for the role named "admin." This makes it easy to create a role that can access all actions, just name it "admin."
 
+# Allow finance to access every action but delete.  Admin can access everything, including delete.
 require_role :finance
-require_role :admin, :only => :delete
-# This means that finance can access the entire controller (and so can admin because admin always returns true for every role) AND admin is required to execute only the delete action.
+require_role :admin, :for => :delete
+# Explanation: Finance can access the entire controller (and so can admin because admin always returns true for every role) AND admin is required to execute only the delete action.
 
 If you don't want this behavior, comment out the line that causes admin to always return true:
 	def has_role?(role_in_question)
@@ -65,24 +77,27 @@ If you don't want this behavior, comment out the line that causes admin to alway
 	end
 You can also change the name of the "all access" role here. You can use any name that makes sense to you.
 
+
+
 ::Syntax::
+==========
 If you use strings as keys for the options hash, it will throw an error. ie:
 
-require_role "admin", "only" => "index"
 # throws an error
+require_role "admin", "for" => "index"
 
-require_role "admin", :only => "index"
 # works just fine
+require_role "admin", :for => "index"
 
 RoleRequirement does not care if the values are symbols or strings, regarding action names. 
 
-require_role "admin", :only => "index"
-require_role "admin", :only => :index
+require_role "admin", :for => "index"
+require_role "admin", :for => :index
 
 Roles are passed to User#has_role? exactly as specified.  By default, RoleRequirement generates this method to not care.  If you customize User#has_role? in such a way that it does care, then you'll have problems. 
 
-require_role "admin", :only => :index
 # ultimately calls User#has_role?("admin")
+require_role "admin", :for => :index
 
-require_role :admin, :only => :index
 # ultimately calls User#has_role?(:admin)
+require_role :admin, :for => :index
