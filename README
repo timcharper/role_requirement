@@ -14,6 +14,8 @@ role_requirement accepts several methods as an options hash of key/value pairs. 
 	:for =>               "Evaluate this role requirement before executing ONLY the following actions in this controller..."
 	:for_all_except =>		"Evaluate this role requirement before executing ALL actions in this controller EXCEPT the following..."
 
+(note:  :only and :except also work, similarly to before_filter)
+
 These methods can be thought of as telling role_requirement when to evaluate current_user's roles.
 
 # Anytime an action is called, require the role admin in order to execute, EXCEPT when index is called." So, index passes through this require_role line allowing anyone to access it, ALL other actions are evaluated against the specified role(s).
