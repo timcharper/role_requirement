@@ -5,11 +5,10 @@ class RolesGenerator < Rails::Generator::NamedBase
   include RoleGeneratorHelpers
   
   attr_accessor :roles_model_name, 
-    :roles_table_name, 
-    :users_table_name, 
-    :users_model_name,
-    :next_user_id
-  
+                :roles_table_name, 
+                :users_table_name, 
+                :users_model_name
+      
   def initialize(runtime_args, runtime_options = {})
     super
     @roles_model_name = (runtime_args[0] || "Role").classify

@@ -25,11 +25,11 @@ module RoleGeneratorHelpers
   end
   
   def add_role_requirement_system(m)
-    m.template '../../shared_templates/role_requirement_system.rb.erb',
+    m.template 'role_requirement_system.rb.erb',
           File.join('lib', "role_requirement_system.rb")
-    m.template '../../shared_templates/role_requirement_test_helper.rb.erb',
+    m.template 'role_requirement_test_helper.rb.erb',
           File.join('lib', "role_requirement_test_helper.rb")
-    m.template '../../shared_templates/hijacker.rb',
+    m.template 'hijacker.rb',
           File.join('lib', "hijacker.rb")
   end
   
