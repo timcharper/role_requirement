@@ -9,7 +9,20 @@ require_role "admin"		"Require that the current_user must have role admin before
 ::"Limiting" Methods::
 =========================
 
-As of 1.4, limiting keys have been adjusted to work in the same manner as the built in keys for before_filters
+role_requirement accepts several methods as an options hash of key/value pairs. These methods work like clauses that limit the require_role line.
+	:for =>               "Evaluate this role requirement before executing ONLY the following actions in this controller..."
+	:for_all_except =>		"Evaluate this role requirement before executing ALL actions in this controller EXCEPT the following..."
+
+(note:  :only and :except also work, similarly to before_filter)
+
+These methods can be thought of as telling role_requirement when to evaluate current_user's roles.
+
+# Anytime an action is called, require the role admin in order to execute, EXCEPT when index is called." So, index passes through this require_role line allowing anyone to access it, ALL other actions are evaluated against the specified role(s).
+require_role "admin", :for_all_except => :index
+
+# Means, "Evaluate current_user's role(s) ONLY when index is called... and require admin in order to execute index." So, every action except index passes through this require_role line, ONLY index is evaluated.
+require_role "admin", :for => :index
+
 
 
 ::How require_role Lines Work In Combination::

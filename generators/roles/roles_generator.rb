@@ -7,7 +7,8 @@ class RolesGenerator < Rails::Generator::NamedBase
   attr_accessor :roles_model_name, 
                 :roles_table_name, 
                 :users_table_name, 
-                :users_model_name
+                :users_model_name,
+                :next_user_id
       
   def initialize(runtime_args, runtime_options = {})
     super
@@ -73,8 +74,7 @@ class RolesGenerator < Rails::Generator::NamedBase
         else
           @next_user_id = users_fixtures["admin"]["id"].to_i
         end
-      rescue e
-        puts e.message
+      rescue
         skip_fixtures = true
       end
     else
