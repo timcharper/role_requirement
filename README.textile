@@ -1,11 +1,12 @@
 h1. Role Requirement Help
 
-- role_requirement first assumes that the controller is accessible to everyone.
+role_requirement first assumes that the controller is accessible to everyone.
 
-- Each require_role line serves to add one or more required roles before executing actions within the controller.
+Each require_role line serves to add one or more required roles before executing actions within the controller. IE:
 
 <pre>
-  require_role "admin" # 	Require that the current_user must have role admin before executing any action within this controller.
+  require_role "admin" # Require that the current_user must have role admin
+                       # before executing any action within this controller.
 </pre>
 
 h2. "Limiting" Methods
