@@ -94,7 +94,7 @@ module RoleRequirementSystem
         passed = false
         roles.each { |role|
           passed = true if <%= users_name %>.has_role?(role)
-        } unless (<%= users_name %>==:false || <%= users_name %>==false)
+        } unless (! <%= users_name %> || <%= users_name %>==:false)
         
         return false unless passed
       }
