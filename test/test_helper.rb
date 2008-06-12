@@ -12,22 +12,12 @@ end
 
 def include_rendered_template(abs_name, locals = {})
   code = render_template_with_locals(abs_name, locals)
-  eval code, binding, abs_name, 1
+  eval(code, binding, abs_name, 1)
 end
 
-puts include_rendered_template(
-  File.join( File.dirname(__FILE__), "../generators/roles/templates", "role_requirement_system.rb.erb"), 
+include_rendered_template(
+  File.join( File.dirname(__FILE__), "../generators/roles/templates/role_requirement_system.rb.erb"), 
   {:users_name => "user" }
 )
 
-for file in ["authenticated_system", "controller_stub.rb", "user_stub.rb"]
-  require File.expand_path(File.join(File.dirname(__FILE__), file))
-end
-
-
-
-def dbg
-  require 'ruby-debug'
-  Debugger.start
-  debugger
-end
+%w[authenticated_system controller_stub.rb user_stub.rb].each { |file| require File.expand_path(File.join(File.dirname(__FILE__), file)) }
