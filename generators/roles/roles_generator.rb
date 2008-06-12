@@ -12,9 +12,14 @@ class RolesGenerator < Rails::Generator::NamedBase
       
   def initialize(runtime_args, runtime_options = {})
     super
+    unless runtime_args.length == 2
+      puts "Not enough arguments!"
+      puts "Expected: script/generate roles [Role] [User]"
+      exit
+    end
+    
     @roles_model_name = (runtime_args[0] || "Role").classify
     @users_model_name = (runtime_args[1] || "User").classify
-    
     @roles_table_name = @roles_model_name.tableize
     @users_table_name = @users_model_name.tableize
     
