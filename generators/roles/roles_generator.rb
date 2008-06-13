@@ -9,7 +9,7 @@ class RolesGenerator < Rails::Generator::NamedBase
                 :users_table_name, 
                 :users_model_name,
                 :next_user_id
-      
+  
   def initialize(runtime_args, runtime_options = {})
     super
     unless runtime_args.length == 2

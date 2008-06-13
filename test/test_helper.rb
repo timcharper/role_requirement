@@ -16,7 +16,7 @@ def include_rendered_template(abs_name, locals = {})
 end
 
 include_rendered_template(
-  File.join( File.dirname(__FILE__), "../generators/roles/templates/role_requirement_system.rb.erb"), 
+  File.join( File.dirname(__FILE__), "../generators/shared_templates/role_requirement_system.rb.erb"), 
   {:users_name => "user" }
 )
 
