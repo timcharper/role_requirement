@@ -99,8 +99,6 @@ class RolesGenerator < Rails::Generator::NamedBase
   end
   
   def add_roles_and_join_table_fixtures(m)
-    m.template 'roles_users.yml',
-              File.join('test/fixtures', "#{habtm_name}.yml")
     m.template 'roles.yml',
               File.join('test/fixtures', "#{roles_table_name}.yml")
   end
@@ -110,7 +108,6 @@ class RolesGenerator < Rails::Generator::NamedBase
     ERB.new(template, nil, "-").result(binding)
   end
   
-  def habtm_name;       [roles_table_name, users_table_name].sort * "_"; end
   def roles_foreign_key; roles_table_name.singularize.foreign_key; end
   def roles_model_filename;  "app/models/#{roles_model_name.underscore}.rb"; end;
   def users_foreign_key; users_table_name.singularize.foreign_key; end

@@ -6,3 +6,4 @@ admin:
   crypted_password: 00742970dc9e6319f8019fd54864d3ea740f04b1 # test
   # activation_code: adminscode # only if you're activating new signups
   created_at: <%%= 1.days.ago.to_s :db %>
+  roles: admin
