@@ -1,6 +1,6 @@
 h1. Role Requirement
 
-Version 1.5 - June 12, 2008
+Version 1.6 - April 28, 2009
 
 role_requirement first assumes that the controller is accessible to everyone.
 
