@@ -49,7 +49,7 @@ EOF
   end
 
   def add_dependencies_to_application_rb
-    if Rails.version ~= /^2.3/
+    if Rails.version =~ /^2.3/
       app_filename = "#{RAILS_ROOT}/app/controllers/application_controller.rb"
     else
       app_filename = "#{RAILS_ROOT}/app/controllers/application.rb"
