@@ -61,12 +61,13 @@ class RolesGenerator < Rails::Generator::NamedBase
   end
     
   def modify_or_add_user_fixtures(m)
-    if (File.exists?(users_fixture_filename))
+    case
+    when (File.exists?(users_fixture_filename))
       users_fixtures_content = File.read users_fixture_filename
       users_fixtures = YAML.load(users_fixtures_content)
       
       begin
-        throw "Can't understand whatever is in #{users_fixture_filename}" unless Hash===users_fixtures
+        raise Exception, "Can't understand whatever is in #{users_fixture_filename}" unless users_fixtures.is_a?(Hash)
         
         unless users_fixtures.has_key?("admin")
           @next_user_id = (users_fixtures.collect{ |k, params| params["id"].to_i}.max||0) + 1
@@ -82,14 +83,12 @@ class RolesGenerator < Rails::Generator::NamedBase
       rescue
         skip_fixtures = true
       end
-    else
+    when File.directory?("test/fixtures")
       # users.yml doesn't exist.  Generate it from scratch
       @next_user_id = 1
-      
       m.template 'users_admin_fixture_with_roles.yml',
         File.join('test/fixtures', "#{users_table_name}.yml")
     end
-
   end
   
   def add_migration(m)
@@ -99,6 +98,7 @@ class RolesGenerator < Rails::Generator::NamedBase
   end
   
   def add_roles_and_join_table_fixtures(m)
+    return unless File.directory?("test/fixtures")
     m.template 'roles.yml',
               File.join('test/fixtures', "#{roles_table_name}.yml")
   end
