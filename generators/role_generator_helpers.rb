@@ -49,11 +49,7 @@ EOF
   end
 
   def add_dependencies_to_application_rb
-    if Rails.version =~ /^2.3/
-      app_filename = "#{RAILS_ROOT}/app/controllers/application_controller.rb"
-    else
-      app_filename = "#{RAILS_ROOT}/app/controllers/application.rb"
-    end
+    app_controller_path = "#{RAILS_ROOT}/app/controllers/application_controller.rb"
     
     auth_system_content = <<EOF
   # AuthenticatedSystem must be included for RoleRequirement, and is provided by installing acts_as_authenticates and running 'script/generate authenticated account user'.
@@ -66,18 +62,18 @@ EOF
 EOF
 
     insert_content_after(
-      app_filename, 
+      app_controller_path,
       /class +ApplicationController/, 
       auth_system_content,
       :unless => lambda {|content| /include +AuthenticatedSystem/.match(content) }
-    ) && puts("Added ApplicationController include to #{app_filename}")
+    ) && puts("Added ApplicationController include to #{app_controller_path}")
     
     insert_content_after(
-      app_filename, 
+      app_controller_path,
       /include +AuthenticatedSystem/, 
       role_requirement_content,
       :unless => lambda {|content| /include +RoleRequirementSystem/.match(content) }
-    ) && puts("Added RoleRequirement include to #{app_filename}")
+    ) && puts("Added RoleRequirement include to #{app_controller_path}")
     
   end
   
